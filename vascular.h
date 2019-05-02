@@ -1,4 +1,3 @@
-
 #ifndef VASCULAR_H
 #define VASCULAR_H
 
@@ -12,11 +11,11 @@ class vascular {
 	vascularPoint* root;
 	double startCoordX;
 	double startCoordY;
-
+	nasalOrMacular specificMaximumX;
 
 public:
-	vascular(vascularPoint* root, double startCoordX, double startCoordY);
-	void makeTreeStructure();
+	vascular(vascularPoint* root, double startCoordX, double startCoordY,nasalOrMacular specificMaximumX);
+	void makeTreeStructure(nasalOrMacular nasalMacular);
 	vascularPoint* getRoot();
 	void printTreeSructure();
 };

@@ -1,12 +1,11 @@
-
+#ifndef VASCULAR_POINTS_H
+#define VASCULAR_POINTS_H
 
 class vascularPoint {
-	double cordX;
-	double cordY;
+	double coordX;
+	double coordY;
 	double bifurcationRatio;
 	
-	//TODO
-	double width;
 	bool branchT;
 	vascularPoint* leftPointer;
 	vascularPoint* rightPointer;
@@ -22,3 +21,5 @@ public:
 	void setRightPoint(vascularPoint* rightPointer);
 	void setBranchT(bool isBranchT);
 };
+
+#endif

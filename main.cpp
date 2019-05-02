@@ -1,6 +1,6 @@
 #include "main.h"
 #include "renderWindow.h"
-
+#include "enableExtension.h"
 
 int main(int argc, char *argv[]) {
 	time_t t;
@@ -64,6 +64,11 @@ void loadConfigFile(int *numberImages, int *width, int *height, std::string *pat
 
 	int size = valueline.size();
 	switch (size) {
+		case 10:
+			if ((valueline.at(9)).compare("true") == 0)
+				enableExtensionOn = true;
+			else
+				enableExtensionOn = false;
 		case 9:
 			*markType = std::stoi(valueline.at(8));
 			if (*markType < 1 || *markType > 2) *markType = 1;

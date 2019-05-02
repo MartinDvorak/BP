@@ -4,7 +4,7 @@
 void functionControler::incrementCorectionBreak()
 {
 	this->corectionPoint++;
-	if (this->corectionPoint == 2)
+	if (this->corectionPoint == 1)
 	{
 		this->corectionPoint = 0;
 		this->calculateCorection();
@@ -14,11 +14,11 @@ void functionControler::incrementCorectionBreak()
 
 void functionControler::calculateCorection()
 {
-	double corection = 0.4;
+	double corection = 0.2;
 	if (this->parentFunction != nullptr)
 	{
-		vector directParent = this->parentFunction->getDirectFunction(this->relativeActualCordX);
-		vector directChild = this->usedFunction->getDirectFunction(this->relativeActualCordX);
+		vector directParent = this->parentFunction->getDirectFunction(this->relativeActualCoordX);
+		vector directChild = this->usedFunction->getDirectFunction(this->relativeActualCoordX);
 
 		if (this->usedFunction->getCurveType() != functionCurve)
 		{
@@ -27,11 +27,10 @@ void functionControler::calculateCorection()
 			this->usedFunction->corectParam(
 				vector(vectorX, vectorY));
 			
-			std::cout << "old vectorX: " << directChild.vectorX << "old vectorY: "  << directChild.vectorY  << std::endl;
-			std::cout << "new vectorX: " << vectorX << "new vectorY: " << vectorY << std::endl;
 		}
 	}
 }
+
 functionControler::functionControler(double startCoordX, double startCoordY, double delta, typeOfVascular actualType,mathFunction* parentFunction, bifurcationLogic* usedBifurcationLogic, bool isTBranch, branchTSteps* status)
 {
 	this->startCoordX = startCoordX;
@@ -39,8 +38,8 @@ functionControler::functionControler(double startCoordX, double startCoordY, dou
 	this->usedFunction = new mathFunction(actualType);
 	this->parentFunction = parentFunction;
 	this->delta = delta;	
-	this->relativeActualCordX = 0.0;
-	this->relativeActualCordY = 0.0;
+	this->relativeActualCoordX = 0.0;
+	this->relativeActualCoordY = 0.0;
 	this->corectionPoint = 0;
 	this->usedBifurcationLogic = usedBifurcationLogic;
 	this->isThisTBranch = isTBranch;
@@ -81,7 +80,7 @@ void setIncrement(double* increment,isInRange status)
 }
 
 double randomCorection(double value, double corection)
-{  // TODO random strelene = dodìlat relativni zachveni s minulým krokem
+{  
 	double fivePercent = 0.05 * value;
 	return value + fivePercent * corection;
 }
@@ -96,30 +95,30 @@ void functionControler::doStep()
 		if (this->usedFunction->getCurveType() == vectorCurve)
 		{
 			this->usedFunction->getMathvalue(increment,&tmpCordX,&tmpCordY);
-			tmpCordX += this->relativeActualCordX;
-			tmpCordY += this->relativeActualCordY;
+			tmpCordX += this->relativeActualCoordX;
+			tmpCordY += this->relativeActualCoordY;
 		}
 		else { // this->usedFunction->getCurveType() == functionCurve
-			tmpCordX = this->relativeActualCordX + increment;
+			tmpCordX = this->relativeActualCoordX + increment;
 			tmpCordY = this->usedFunction->getMathvalue(tmpCordX);
 		}
 
-		actualDistance = distance(this->relativeActualCordX, this->relativeActualCordY, tmpCordX,tmpCordY);
-		status = checkRange(delta, actualDistance);
+		actualDistance = distance(this->relativeActualCoordX, this->relativeActualCoordY, tmpCordX,tmpCordY);
+		status = checkRange(this->delta, actualDistance);
 		setIncrement(&increment, status);
 	} while(status != inRange);
 	
 	generator* UniformDistribution = generator::getGenerator();
-	this->relativeActualCordX = randomCorection(tmpCordX,UniformDistribution->getNextUniformValue());
-	this->relativeActualCordY = randomCorection(tmpCordY,UniformDistribution->getNextUniformValue());
+	this->relativeActualCoordX = randomCorection(tmpCordX,UniformDistribution->getNextUniformValue());
+	this->relativeActualCoordY = randomCorection(tmpCordY,UniformDistribution->getNextUniformValue());
 	this->incrementCorectionBreak();
 
 }
 
 void functionControler::getCoords(double * coordX, double * coordY)
 {
-	*coordX = this->relativeActualCordX + this->startCoordX;
-	*coordY = this->relativeActualCordY + this->startCoordY;
+	*coordX = this->relativeActualCoordX + this->startCoordX;
+	*coordY = this->relativeActualCoordY + this->startCoordY;
 }
 
 mathFunction * functionControler::getParentFunciton()
@@ -168,4 +167,9 @@ void functionControler::setParentFunction(mathFunction * parentFunction)
 void functionControler::setIsThisTBranch(bool isTBranch)
 {
 	this->isThisTBranch = isTBranch;
+}
+
+void functionControler::setBifurcationLogic(bifurcationLogic * newBifurcationLogic)
+{
+	this->usedBifurcationLogic = newBifurcationLogic;
 }

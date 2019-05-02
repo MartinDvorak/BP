@@ -44,8 +44,6 @@ vessel::vessel(int type, int quadrant, double width, double startX, double start
 	}
 
 	this->startPoint->setPositionX(this->startX);
-	std::cout << "startX: " << this->startX << "xq: " << xq << std::endl;
-	std::cout << "startY: " << this->startY << "yq: " << yq << std::endl;
 
 	this->startPoint->setPositionY(this->startY);
 	std::vector<bifurcationPoint*> pointsQue;

@@ -1,4 +1,4 @@
-#include "pch.h"
+	#include "pch.h"
 #include "vascular.h"
 #include <fstream> //todo
 #include <cmath>
@@ -6,29 +6,47 @@
 #include "realisticExtensionConstant.h"
 #include "randomGenerator.h"
 
-vascular::vascular(vascularPoint * root, double startCoordX, double startCoordY)
+vascular::vascular(vascularPoint * root, double startCoordX, double startCoordY, nasalOrMacular specificMaximumX)
 {
 	this->root = root;
 	this->startCoordX = startCoordX;
 	this->startCoordY = startCoordY;
+	this->specificMaximumX = specificMaximumX;
 }
 
 double calculateBifurcationRatio()
 {
 	generator* uniformDistribution = generator::getGenerator();
 	return uniformDistribution->getNextValue(0.55,0.7);
-	//return randRangeND(0.5,0.99);
 }
 
-bool isBeyondTheEdge(double coordX, double coordY)
+double distanceBetweenPoint(vector firstPoint, vector secondPoint)
 {
-	if (coordX > X_COORDINATE_MAX -20)
+	double distanceX = std::pow(std::abs(firstPoint.vectorX - secondPoint.vectorX), 2);
+	double distanceY = std::pow(std::abs(firstPoint.vectorY - secondPoint.vectorY), 2);
+
+	return std::sqrt(distanceX + distanceY);
+}
+
+bool isPointInMacularArea(double coordX, double coordY)
+{
+	return distanceBetweenPoint(vector(coordX, coordY), vector(X_MACULAR_POINT,Y_MACULAR_POINT)) <
+		RADIUS_MACULAR_POINT;
+}
+
+bool isBeyondTheEdge(double coordX, double coordY,nasalOrMacular nasalOrMacular)
+{	
+	if ((coordX > X_COORDINATE_MAX_MACULAR)&&(nasalOrMacular == macular))
 		return true;
-	if (coordX < X_COORDINATE_MIN + 10)
+	if ((coordX > X_COORDINATE_MAX_NASAL) && (nasalOrMacular == nasal))
 		return true;
-	if (coordY > Y_COORDINATE_MAX - 15)
+	if (coordX < X_COORDINATE_MIN)
 		return true;
-	if (coordY < 0)
+	if (coordY > Y_COORDINATE_MAX)
+		return true;
+	if (coordY < Y_COORDINATE_MIN)
+		return true;
+	if (isPointInMacularArea(coordX, coordY))
 		return true;
 	return false;
 }
@@ -56,19 +74,17 @@ double rotatingByAngleCoordY(double angle, vector direction)
 
 vector normaliseCoordXToOne(vector vectorBeforeNormalise)
 { 
-	vectorBeforeNormalise.vectorX = vectorBeforeNormalise.vectorX / std::abs(vectorBeforeNormalise.vectorX);
-	vectorBeforeNormalise.vectorY = vectorBeforeNormalise.vectorY / std::abs(vectorBeforeNormalise.vectorX);
+	double normalizedValue = std::abs(vectorBeforeNormalise.vectorX);
+	vectorBeforeNormalise.vectorX = vectorBeforeNormalise.vectorX / normalizedValue;
+	vectorBeforeNormalise.vectorY = vectorBeforeNormalise.vectorY / normalizedValue;
 	return vectorBeforeNormalise;
 }
 
-// pi/2 -> 0
-// pi/4 -> 0.5
-// 0	-> 1
 double convertBifurcationRatioToRadian(double bifurcationRatio, double openCoefficient)
 {
 	if (bifurcationRatio < 0.10)
 		return RE_PI / 2;
-	return (RE_PI / 2 - RE_PI / 2 * bifurcationRatio)/ openCoefficient;
+	return (RE_PI / 2 - RE_PI / 2 * bifurcationRatio) / openCoefficient;
 }
 
 double covertBifurcationDirectiontoSign(bifurcationDirection newDirection)
@@ -105,18 +121,31 @@ vector calculateRotation(double bifurcationRatio, vector direction, bifurcationD
 
 	vector rotatedVector = computateRotation(direction,angleInRadian,sign);
 	vector normalisedVector = normaliseCoordXToOne(rotatedVector);
-
 	return normalisedVector;
 }
-
+vector directionToMacularArea(double coordX, double coordY)
+{
+	if(coordX < 45.0)
+	{
+		vector tmp(X_MACULAR_POINT - coordX, Y_MACULAR_POINT - coordY);
+		tmp.vectorY /= std::abs(tmp.vectorX);
+		tmp.vectorX /= std::abs(tmp.vectorX);
+		return tmp;
+	}
+	return {0, -1};
+}
 
 functionControler* startBranchControler(functionControler* vascularBranchControler, double actualCoordX, double actualCoordY,double bifurcationRatio, bifurcationDirection newDirection)
 {
 	vector parentDirection = vascularBranchControler->getUsedFunciton()->getDirectFunction(actualCoordX);
 	vector oldParentDirection = vascularBranchControler->getUsedFunciton()->getDirectFunction(actualCoordX-10);
 	int childBifuracationLevel = 1 + vascularBranchControler->getUsedBifurcationLogic()->getActualBifurcationLevel();
+	int childBifuracationLevelMax = vascularBranchControler->getUsedBifurcationLogic()->getMaximalBifurcationLevel();
 
-	bifurcationLogic* branchBifurcationLogic = new bifurcationLogic(0.05, 0.05, 0.05, 0.02, childBifuracationLevel);
+	bifurcationLogic* branchBifurcationLogic = new bifurcationLogic(0.05, 0.00, 0.1, 0.00, childBifuracationLevel, childBifuracationLevelMax);
+	if (vascularBranchControler->getIsThisBranchT()) {
+		branchBifurcationLogic = new bifurcationLogic(0.3, 0.00, 0.15, 0.00, childBifuracationLevel, childBifuracationLevelMax);
+	}
 	
 	double delta = 3.0;
 	int remainSteps;
@@ -135,30 +164,33 @@ functionControler* startBranchControler(functionControler* vascularBranchControl
 		{
 			vector actualDirection = computateRotation(parentDirection, RE_PI / 2, covertBifurcationDirectiontoSign(newDirection));
 			branchControler->getUsedFunciton()->corectParam(normaliseCoordXToOne(actualDirection));
-			branchControler->setParentFunction(new mathFunction(vector(0,-5)));
+			branchControler->setParentFunction(new mathFunction(directionToMacularArea(actualCoordX,actualCoordY)));
 			branchControler->setIsThisTBranch(true);
+			branchControler->setBifurcationLogic(new bifurcationLogic(0.3, 0.00, 0.15, 0.00, childBifuracationLevel, childBifuracationLevelMax));
 		}
 		else {
 			branchControler->getUsedFunciton()->corectParam(vector(1.0, oldParentDirection.vectorY + (oldParentDirection.vectorY - parentDirection.vectorY)));
+			branchControler->getUsedBifurcationLogic()->setMaxBifurcationLevel(2);
 		}		
 	}
 	else {
-		double openCoefficient = 1.5;
+		double openCoefficient = 1.5; // =1.5;
 		if (vascularBranchControler->getIsThisBranchT()) {
-			openCoefficient = 1.1;
+			openCoefficient = 1.2;
 		}
 		vector directionBranch = calculateRotation(bifurcationRatio, parentDirection, newDirection,openCoefficient);
 		branchControler->getUsedFunciton()->corectParam(directionBranch);
 		
 		vector parentDirectionBranch = calculateRotation(1-bifurcationRatio, parentDirection, getReverseDirection(newDirection),openCoefficient);
+		
 		vascularBranchControler->getUsedFunciton()->corectParam(parentDirectionBranch);
 	}
 	return branchControler;
 }
 
-vascularPoint* generateVascularBranch(double coordX, double coordY, double bifurcationRatio, functionControler* vascularBranchControler)
+vascularPoint* generateVascularBranch(double coordX, double coordY, double bifurcationRatio, functionControler* vascularBranchControler,nasalOrMacular specificMaxX)
 {
-	if (isBeyondTheEdge(coordX,coordY))
+	if (isBeyondTheEdge(coordX,coordY,specificMaxX))
 		return nullptr;
 	vascularPoint* actualRoot = nullptr;
 	vascularPoint* actualParent = nullptr;
@@ -169,24 +201,34 @@ vascularPoint* generateVascularBranch(double coordX, double coordY, double bifur
 		vascularBranchControler->getCoords(&actualCoordX, &actualCoordY);
 		double newBifrurcationRatio;
 		
-		bifurcationDirection directionForNewBranchY = vascularBranchControler->getUsedBifurcationLogic()->calculateBifurcationBranchY();
-		bifurcationDirection directionForNewBranchT = vascularBranchControler->getUsedBifurcationLogic()->calculateBifurcationBranchT();
+		bifurcationDirection directionForNewBranchY;
+		bifurcationDirection directionForNewBranchT;
+		if (vascularBranchControler->getUsedFunciton()->getCurveType() == UperiorMacularVasculary)
+		{
+			directionForNewBranchY = vascularBranchControler->getUsedBifurcationLogic()->calculateBifurcationBranchY(actualCoordX);
+			directionForNewBranchT = vascularBranchControler->getUsedBifurcationLogic()->calculateBifurcationBranchT(actualCoordX);
+		}
+		else {
+			directionForNewBranchY = vascularBranchControler->getUsedBifurcationLogic()->calculateBifurcationBranchY();
+		}
 		
 		if (directionForNewBranchY != noneDirection)
 		{
+			vascularBranchControler->getUsedBifurcationLogic()->deleteFirstBifurcationPointY();
 			newBifrurcationRatio = calculateBifurcationRatio();
 			actualPoint = new vascularPoint(actualCoordX, actualCoordY, newBifrurcationRatio);
 			actualPoint->setLeftPoint(
 				generateVascularBranch(actualCoordX,actualCoordY,1-newBifrurcationRatio,
-					startBranchControler(vascularBranchControler,actualCoordX,actualCoordY,1-newBifrurcationRatio,directionForNewBranchY)));
+					startBranchControler(vascularBranchControler,actualCoordX,actualCoordY,1-newBifrurcationRatio,directionForNewBranchY),specificMaxX));
 		}
 		else if ((directionForNewBranchT != noneDirection)&&(vascularBranchControler->getUsedFunciton()->getCurveType() == UperiorMacularVasculary))
 		{
-			newBifrurcationRatio = 0.95;
+			vascularBranchControler->getUsedBifurcationLogic()->deleteFirstBifurcationPointT();
+			newBifrurcationRatio = randRange(0.92, 0.96);
 			actualPoint = new vascularPoint(actualCoordX, actualCoordY, newBifrurcationRatio);
 			actualPoint->setLeftPoint(
 				generateVascularBranch(actualCoordX, actualCoordY, 1.0 - newBifrurcationRatio,
-					startBranchControler(vascularBranchControler, actualCoordX, actualCoordY, 1.0 - newBifrurcationRatio, directionForNewBranchT)));
+					startBranchControler(vascularBranchControler, actualCoordX, actualCoordY, 1.0 - newBifrurcationRatio, directionForNewBranchT),specificMaxX));
 
 		}
 		else { // continue without bifurcation point
@@ -208,21 +250,26 @@ vascularPoint* generateVascularBranch(double coordX, double coordY, double bifur
 
 		if (vascularBranchControler->isStepsBranchTDoneAll())
 			break;
-	} while (!isBeyondTheEdge(actualCoordX, actualCoordY));
+	} while (!isBeyondTheEdge(actualCoordX, actualCoordY,specificMaxX));
 
 	return actualRoot;
 }
 
-void vascular::makeTreeStructure()
+void vascular::makeTreeStructure(nasalOrMacular nasalMacular)
 {
 	double actualPointCordX = this->startCoordX;
 	double actualPointCordY = this->startCoordY;
 	
-	bifurcationLogic* macularArteriolyBifurcationLogic = new bifurcationLogic(0.15, 0.0, 0.1, 0.2, 0);
+	bifurcationLogic* macularArteriolyBifurcationLogic = new bifurcationLogic(0,3, nasalMacular);
+	typeOfVascular whichVascular = UperiorMacularVasculary;
+	if(nasalMacular == nasal)
+	{ 
+		whichVascular = UperiorNasalVasculary;
+	}
 	functionControler* UperiolMacularArteriolyFunction = 
-		new functionControler(this->startCoordX, this->startCoordY, 6.0,typeOfVascular::UperiorMacularVasculary,nullptr,macularArteriolyBifurcationLogic,false,nullptr);
+		new functionControler(this->startCoordX, this->startCoordY, 3.0,whichVascular,nullptr,macularArteriolyBifurcationLogic,false,nullptr);
 
-	this->root->setRightPoint(generateVascularBranch(this->startCoordX, this->startCoordY, 1.0, UperiolMacularArteriolyFunction));
+	this->root->setRightPoint(generateVascularBranch(this->startCoordX, this->startCoordY, 1.0, UperiolMacularArteriolyFunction,this->specificMaximumX));
 
 }
 
@@ -235,7 +282,6 @@ vascularPoint * vascular::getRoot()
 
 void vascular::printTreeSructure()
 {
-	// todo
 	std::ofstream myfile;
 	myfile.open("example.txt");
 

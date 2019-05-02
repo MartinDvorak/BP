@@ -10,7 +10,7 @@ branchTSteps::branchTSteps(int maxNumberOfStep)
 bool branchTSteps::isEndOfVascular()
 {
 	counterOfStep++;
-	return counterOfStep < maxNumberOfStep ? false : true;
+	return counterOfStep >= maxNumberOfStep;
 }
 
 int branchTSteps::numberOfRemainSteps()

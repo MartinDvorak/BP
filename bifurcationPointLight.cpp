@@ -3,10 +3,7 @@
 
 bifurcationPointLight::bifurcationPointLight()
 {
-	//TODO predelat na random hodnoty
-	this->curveWeight1 = 0.9; // 0.8 - 1.2
-	this->curveWeight2 = 0.9; // 0.8 - 1.2
-	this->curveEndDeviation = 70; // 50% <-90;-60> 50% <60;90>
+
 }
 
 void bifurcationPointLight::setType(int type)
@@ -54,14 +51,14 @@ void bifurcationPointLight::setWidthRation(double widthRatio)
 
 void bifurcationPointLight::setAndConvertPositionX(double coordX)
 {
-	double coordXMax = X_COORDINATE_MAX;
-	double coordXMin = X_COORDINATE_MIN;
-	this->positionX = (-2.0* ((coordX - coordXMin) / (coordXMax - coordXMin)) + 1.0) + X_COORDINATE_SHIFT;
+	double coordXMax = X_COORDINATE_MAX_CONVERSION;
+	double coordXMin = X_COORDINATE_MIN_CONVERSION;
+	this->positionX = (-2.0* ((coordX - coordXMin) / (coordXMax - coordXMin)) + 1.0) + X_COORDINATE_SHIFT_CONVERSION;
 }
 
 void bifurcationPointLight::setAndConvertPositionY(double coordY)
 {
-	double coordYMax = Y_COORDINATE_MAX;
+	double coordYMax = Y_COORDINATE_MAX_CONVERSION;
 	this->positionY = (-1.0* coordY / coordYMax);
 }
 

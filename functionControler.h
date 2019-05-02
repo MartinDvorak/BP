@@ -16,8 +16,8 @@ class functionControler {
 
 	mathFunction* usedFunction;
 	mathFunction* parentFunction;
-	double relativeActualCordX;
-	double relativeActualCordY;
+	double relativeActualCoordX;
+	double relativeActualCoordY;
 	double delta;
 	
 	int corectionPoint;
@@ -44,6 +44,7 @@ public:
 	void setDelta(double actualDelta);
 	void setParentFunction(mathFunction* parentFunction);
 	void setIsThisTBranch(bool isTBranch);
+	void setBifurcationLogic(bifurcationLogic* newBifurcationLogic);
 };
 
 #endif

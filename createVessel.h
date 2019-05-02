@@ -1,6 +1,7 @@
-#pragma once
+#ifndef CREATE_VESSEL_H
+#define CREATE_VESSEL_H
 #include "adapter.h"
-
+#include "deleteCrossingVascular.h"
 class createVessel
 {
 
@@ -11,3 +12,4 @@ public:
 	~createVessel();
 };
 
+#endif

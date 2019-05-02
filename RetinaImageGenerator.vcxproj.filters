@@ -84,6 +84,12 @@
     <ClCompile Include="createVessel.cpp">
       <Filter>Source Files\RealisticExtension</Filter>
     </ClCompile>
+    <ClCompile Include="deleteCrossingVascular.cpp">
+      <Filter>Source Files\RealisticExtension</Filter>
+    </ClCompile>
+    <ClCompile Include="parameterCorectioner.cpp">
+      <Filter>Source Files\RealisticExtension</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="layer.h">
@@ -153,6 +159,15 @@
       <Filter>Header Files\RealisticExtension</Filter>
     </ClInclude>
     <ClInclude Include="createVessel.h">
+      <Filter>Header Files\RealisticExtension</Filter>
+    </ClInclude>
+    <ClInclude Include="deleteCrossingVascular.h">
+      <Filter>Header Files\RealisticExtension</Filter>
+    </ClInclude>
+    <ClInclude Include="enableExtension.h">
+      <Filter>Header Files\RealisticExtension</Filter>
+    </ClInclude>
+    <ClInclude Include="parameterCorectioner.h">
       <Filter>Header Files\RealisticExtension</Filter>
     </ClInclude>
   </ItemGroup>

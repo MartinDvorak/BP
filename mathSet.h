@@ -3,12 +3,19 @@
 
 #include <iostream>
 #include "vector.h"
+#include "realisticExtensionConstant.h"
+#include "randomGenerator.h"
+#include "main.h"
 
 double macularArteriolyI(double param, double x);
 double macularArteriolyII(double param, double x);
-double simpleVector(double param, double x);
+double macularArteriolyIII(double param, double x);
+double nasalArteriolyI(double param, double x);
+double nasalArteriolyII(double param, double x);
+double nasalArteriolyIII(double param, double x);
 
-enum typeOfVascular { UperiorMacularVasculary, VascularyFromUperiorMacular};
+
+enum typeOfVascular { UperiorMacularVasculary, VascularyFromUperiorMacular, UperiorNasalVasculary};
 enum typeOfCurve {functionCurve, vectorCurve};
 
 class mathFunction {

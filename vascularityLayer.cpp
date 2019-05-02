@@ -1,6 +1,7 @@
 #include "vascularityLayer.h"
 #include "adapter.h"
 #include "createVessel.h"
+#include "parameterCorectioner.h"
 
 int tmpX(double x) {
 	return (int)((x + 1.0) * 1000) / 2;
@@ -41,81 +42,64 @@ vascularityLayer::vascularityLayer(int width, int height, double depth, double l
 	double yq2 = randRange(-0.05, 0.05);
 
 	//// vytvoreni tepen a zil pro vsechny kvadranty
-	//double r = randRange(0.0, 1.0);
-	//this->arteryQ1 = new vessel(0, 1, 0.015, 0.42, 0.0, xq1, yq2, (r > 0.5) ? 0 : 1);
-	//this->veinQ1 = new vessel(1, 1, 0.015, 0.42, 0.0, xq1, yq2, (r > 0.5) ? 1 : 0);
-	//
-	//r = randRange(0.0, 1.0);
-	//this->arteryQ2 = new vessel(0, 2, 0.015, 0.42, 0.0, xq1, yq1, (r > 0.5) ? 0 : 1);
-	//this->veinQ2 = new vessel(1, 2, 0.015, 0.42, 0.0, xq1, yq1, (r > 0.5) ? 1 : 0);
-	//
-	//r = randRange(0.0, 1.0);
-	//this->arteryQ3 = new vessel(0, 3, 0.015, 0.42, 0.0, xq2, yq1, (r > 0.5) ? 0 : 1);
-	//this->veinQ3 = new vessel(1, 3, 0.015, 0.42, 0.0, xq2, yq1, (r > 0.5) ? 1 : 0);
-	//
-	//r = randRange(0.0, 1.0);
-	// this->arteryQ4 = new vessel(0, 4, 0.015, 0.42, 0.0, xq2, yq2, (r > 0.5) ? 0 : 1);
-	//this->veinQ4 = new vessel(1, 4, 0.015, 0.42, 0.0, xq2, yq2, (r > 0.5) ? 1 : 0);
-
-
-	//TODO test 
-	//this->arteryQ1 = new vessel(0, 1, 0.015, 0.42, 0.0, xq1, yq2);
-	//this->arteryQ2 = new vessel(0, 2, 0.015, 0.42, 0.0, xq1, yq1);
-	this->arteryQ3 = new vessel(0, 3, 0.015, 0.42, 0.0, xq2, yq1);
-	//this->arteryQ4 = new vessel(0, 4, 0.015, 0.42, 0.0, xq2, yq2);
-
-	createVessel* vesselCreator;
-	//arteryQ1->setStartPoint(vesselCreator->createBranch(inferior, nasal, xq1, yq2));
-	//arteryQ2->setStartPoint(vesselCreator->createBranch(inferior, macular, xq1, yq1));
-	arteryQ3->setStartPoint(vesselCreator->createBranch(superior, macular, xq2, yq1));
-	//arteryQ4->setStartPoint(vesselCreator->createBranch(superior, nasal, xq2, yq2));
-
-
-	//TODO test 
-	std::vector<bifurcationPoint*> queue;
-	queue.push_back(this->arteryQ3->getStartPoint());
-	bifurcationPoint* Root;
-	while (!queue.empty())
+	
+	extern bool enableExtensionOn;
+	if (!enableExtensionOn)
 	{
-		Root = queue.front();
-		queue.erase(queue.begin());
-		count++;
-	//	std::cout << "#########################################" << std::endl;
-	//	std::cout << "pozice bodu X: " << Root->getPositionX() << std::endl;
-	//	std::cout << "pozice bodu X: " << tmpX(Root->getPositionX()) << std::endl;
+		double r = randRange(0.0, 1.0);
+		this->arteryQ1 = new vessel(0, 1, 0.015, 0.42, 0.0, xq1, yq2, (r > 0.5) ? 0 : 1);
+		this->veinQ1 = new vessel(1, 1, 0.015, 0.42, 0.0, xq1, yq2, (r > 0.5) ? 1 : 0);
 
-	//	std::cout << "pozice bodu Y: " << Root->getPositionY() << std::endl;
-	//	std::cout << "pozice bodu Y: " << tmpY(Root->getPositionY()) << std::endl;
+		r = randRange(0.0, 1.0);
+		this->arteryQ2 = new vessel(0, 2, 0.015, 0.42, 0.0, xq1, yq1, (r > 0.5) ? 0 : 1);
+		this->veinQ2 = new vessel(1, 2, 0.015, 0.42, 0.0, xq1, yq1, (r > 0.5) ? 1 : 0);
 
-	//	std::cout << "PrevDistance: " << Root->getPrevDistance() << std::endl;
-	//	std::cout << "Width: " << Root->getWidth() << std::endl;
-	//	std::cout << "DirectionAngle: " << Root->getDirectionAngle() << std::endl;
-	//	std::cout << "WidthRatio: " << Root->getWidthRatio() << std::endl;
-	//	std::cout << "CurveEndDeviation: " << Root->getCurveEndDeviation() << std::endl;
-	//	std::cout << "DirectionType: " << Root->getDirectionType() << std::endl;
-	//	std::cout << "Type: " << Root->getType() << std::endl;
+		r = randRange(0.0, 1.0);
+		this->arteryQ3 = new vessel(0, 3, 0.015, 0.42, 0.0, xq2, yq1, (r > 0.5) ? 0 : 1);
+		this->veinQ3 = new vessel(1, 3, 0.015, 0.42, 0.0, xq2, yq1, (r > 0.5) ? 1 : 0);
 
-
-		if(Root->getNextPointRight() != NULL)
-			queue.push_back(Root->getNextPointRight());
-		if (Root->getNextPointLeft() != NULL)
-			queue.push_back(Root->getNextPointLeft());
+		r = randRange(0.0, 1.0);
+		this->arteryQ4 = new vessel(0, 4, 0.015, 0.42, 0.0, xq2, yq2, (r > 0.5) ? 0 : 1);
+		this->veinQ4 = new vessel(1, 4, 0.015, 0.42, 0.0, xq2, yq2, (r > 0.5) ? 1 : 0);
 	}
-	std::cout << "pocet bodu vetveni ve stromu: "<<count << std::endl;
-	// end |TODO
+	else {
+		std::cout << "My Part Started" << std::endl;
+		parameterCorectioner* corector = new parameterCorectioner();
+		this->arteryQ1 = new vessel(0, 1, 0.015, 0.42, 0.0, xq1, yq2);
+		this->arteryQ2 = new vessel(0, 2, 0.015, 0.42, 0.0, xq1, yq1);
+		this->arteryQ3 = new vessel(0, 3, 0.015, 0.42, 0.0, xq2, yq1);
+		this->arteryQ4 = new vessel(0, 4, 0.015, 0.42, 0.0, xq2, yq2);
+
+		this->veinQ1 = new vessel(1, 1, 0.015, 0.42, 0.0, xq1, yq2);
+		this->veinQ2 = new vessel(1, 2, 0.015, 0.42, 0.0, xq1, yq1);
+		this->veinQ3 = new vessel(1, 3, 0.015, 0.42, 0.0, xq2, yq1);
+		this->veinQ4 = new vessel(1, 4, 0.015, 0.42, 0.0, xq2, yq2);
+		createVessel* vesselCreator;
+		arteryQ1->setStartPoint(vesselCreator->createBranch(inferior, nasal, xq1, yq2));
+		arteryQ2->setStartPoint(vesselCreator->createBranch(inferior, macular, xq1, yq1));
+		arteryQ3->setStartPoint(vesselCreator->createBranch(superior, macular, xq2, yq1));
+		arteryQ4->setStartPoint(vesselCreator->createBranch(superior, nasal, xq2, yq2));
+
+		veinQ1->setStartPoint(vesselCreator->createBranch(inferior, nasal, xq1, yq2));
+		veinQ2->setStartPoint(vesselCreator->createBranch(inferior, macular, xq1, yq1));
+		veinQ3->setStartPoint(vesselCreator->createBranch(superior, macular, xq2, yq1));
+		veinQ4->setStartPoint(vesselCreator->createBranch(superior, nasal, xq2, yq2));
+		delete(corector);
+		std::cout << "My Part Done" << std::endl;
+	}
 
 	this->initRand();
 }
 
 vascularityLayer::~vascularityLayer() {
-	//delete(this->arteryQ1);
-	//delete(this->arteryQ2);
-	//delete(this->arteryQ3);
-	//delete(this->arteryQ4);
-	//delete(this->veinQ1);
-	//delete(this->veinQ2);
-	//delete(this->veinQ3);
-	//delete(this->veinQ4);
+	delete(this->arteryQ1);
+	delete(this->arteryQ2);
+	delete(this->arteryQ3);
+	delete(this->arteryQ4);
+	delete(this->veinQ1);
+	delete(this->veinQ2);
+	delete(this->veinQ3);
+	delete(this->veinQ4);
 }
 
 void vascularityLayer::initRand() {
@@ -149,13 +133,12 @@ void vascularityLayer::makeTextureImage() {
 			this->textureImage[y * this->textureWidth * 4 + x * 4 + 3] = (GLubyte)0;
 		}
 	}
-	//TODO - Zde jsem si to zakomentoval
 	// vykresleni tepen do textury
-	//this->drawVessel(this->arteryQ1, transformation, transformSize);	
-	//this->drawVessel(this->arteryQ2, transformation, transformSize);
+	this->drawVessel(this->arteryQ1, transformation, transformSize);	
+	this->drawVessel(this->arteryQ2, transformation, transformSize);
 	this->drawVessel(this->arteryQ3, transformation, transformSize);
-	//this->drawVessel(this->arteryQ4, transformation, transformSize);
-	// docasna textura pro vykresleni zil
+	this->drawVessel(this->arteryQ4, transformation, transformSize);
+	 //docasna textura pro vykresleni zil
 	this->createNewTexureImageTmp(false);
 	// pruhledna docasna textura
 	for (int y = 0; y < this->textureHeight; y++) {
@@ -168,10 +151,10 @@ void vascularityLayer::makeTextureImage() {
 	}
 	// vykresleni zil do docasne textury 
 	//TODO - Zde jsem si to zakomentoval
-	//this->drawVessel(this->veinQ1, transformation, transformSize);
-	//this->drawVessel(this->veinQ2, transformation, transformSize);
-	//this->drawVessel(this->veinQ3, transformation, transformSize);
-	//this->drawVessel(this->veinQ4, transformation, transformSize);
+	this->drawVessel(this->veinQ1, transformation, transformSize);
+	this->drawVessel(this->veinQ2, transformation, transformSize);
+	this->drawVessel(this->veinQ3, transformation, transformSize);
+	this->drawVessel(this->veinQ4, transformation, transformSize);
 
 	// vykresleni zil do textury s tepnami (zily budou lezet nad tepnami)
 	for (int y = 0; y < this->textureHeight; y++) {

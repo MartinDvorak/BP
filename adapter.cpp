@@ -61,7 +61,7 @@ bifurcationPoint* copyToBifurcationPointData(vascularPoint* readPoint,bifurcatio
 	return actualBifurcationPoint;
 }
 
-void adapter::controlPassageTree()
+void adapter::adapteeTree()
 {
 	bifurcationPoint* preRoot = new bifurcationPoint(this->bifurcationMoveCoordX, this->bifurcationMoveCoordY,0,1.0,0.0,1.0,nullptr,1,45);
 	this->bifurcationPointTreeRoot = 

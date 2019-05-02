@@ -157,10 +157,12 @@
     <ClCompile Include="branchTList.cpp" />
     <ClCompile Include="branchTSteps.cpp" />
     <ClCompile Include="createVessel.cpp" />
+    <ClCompile Include="deleteCrossingVascular.cpp" />
     <ClCompile Include="functionControler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mathSet.cpp" />
     <ClCompile Include="opticDiscLayer.cpp" />
+    <ClCompile Include="parameterCorectioner.cpp" />
     <ClCompile Include="perlin.cpp" />
     <ClCompile Include="randomGenerator.cpp" />
     <ClCompile Include="renderWindow.cpp" />
@@ -180,11 +182,14 @@
     <ClInclude Include="branchTList.h" />
     <ClInclude Include="branchTSteps.h" />
     <ClInclude Include="createVessel.h" />
+    <ClInclude Include="deleteCrossingVascular.h" />
+    <ClInclude Include="enableExtension.h" />
     <ClInclude Include="functionControler.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="layer.h" />
     <ClInclude Include="mathSet.h" />
     <ClInclude Include="opticDiscLayer.h" />
+    <ClInclude Include="parameterCorectioner.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="randomGenerator.h" />
     <ClInclude Include="realisticExtensionConstant.h" />

@@ -1,10 +1,9 @@
-#include "pch.h"
 #include "vascularPoints.h"
 
 vascularPoint::vascularPoint(double cordX, double cordY,double bifurcationRatio)
 {
-	this->cordX = cordX;
-	this->cordY = cordY;
+	this->coordX = cordX;
+	this->coordY = cordY;
 	this->branchT = false;
 	this->bifurcationRatio = bifurcationRatio;
 	this->leftPointer = nullptr;
@@ -28,12 +27,12 @@ vascularPoint * vascularPoint::getRightPoint()
 
 double vascularPoint::getCordX()
 {
-	return this->cordX;
+	return this->coordX;
 }
 
 double vascularPoint::getCordY()
 {
-	return this->cordY;
+	return this->coordY;
 }
 
 double vascularPoint::getBifurcationRatio()

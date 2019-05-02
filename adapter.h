@@ -5,11 +5,7 @@
 #include "vessel.h"
 #include "bifurcationPointLight.h"
 #include "branchTList.h"
-
-
-enum inferiorOrSuperior{inferior, superior};
-enum nasalOrMacular {nasal, macular};
-
+#include "realisticExtensionConstant.h"
 
 class adapter {
 	vascular* vascularPointsTree;
@@ -22,7 +18,7 @@ class adapter {
 public:
 	adapter(vascular* newTechlogie, bifurcationPoint* oldTechnologie,double moveCoordX, double moveCoordY, inferiorOrSuperior signY, nasalOrMacular signX);
 	bifurcationPoint* getBifurcationPointRoot();
-	void controlPassageTree();
+	void adapteeTree();
 	void printBifurcationTree();
 };
 
